@@ -13,8 +13,8 @@ class Entry(Base):
 
     follower = Column(String(50), nullable=True)
     status = Column(String(200), nullable=True)
-    success_count = Column(Integer, nullable=True)
-    failed_count = Column(Integer, nullable=True)
+    # success_count = Column(Integer, nullable=True)
+    # failed_count = Column(Integer, nullable=True)
     record_entries = relationship("RecordEntry", backref="entry")
 
 

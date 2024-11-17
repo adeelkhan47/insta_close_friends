@@ -17,12 +17,11 @@ class Enum(str, PyEnum):
                 return member.value
 
 
-class RoleNames(Enum):
-    SUPER_ADMIN = "Super Admin"
-    CLIENT = "Client"
-class WebsiteStatus(Enum):
+class RecordStatus(Enum):
+    Success = "Success"
+    Failed = "Failed"
+    Partial = "Partial"
     Pending = "Pending"
-    Approved = "Approved"
-    Error = "Error"
-    Rejected = "Rejected"
-
+class EntryStatus(Enum):
+    Passed = "Passed"
+    Failed = "Failed"
