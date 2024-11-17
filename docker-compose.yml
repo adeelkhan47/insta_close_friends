@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+
+  postgres_db:
+    container_name: IGStoryBooster_db
+    image: postgres
+    environment:   # Set up postgres database name and password
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_USER: postgres
+      POSTGRES_DB: IGStoryBooster_db
+    ports:    # Set up ports exposed for other containers to connect to
+      - 5433:5432
+    networks:
+      - app-tier
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis
+    container_name: redis
+    # command: [ "redis-server", "--protected-mode", "no", "--bind", "0.0.0.0" ]
+    ports:
+      - 6379:6379
+    networks:
+      - app-tier
+
+  python_app:
+    container_name: IGStoryBooster_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - IGStoryBooster_db
+      - redis
+    networks:
+      - app-tier
+    volumes:
+      - ./static:/app/static
+    command:
+      tail -f /dev/null
+
+networks:
+  app-tier:
+    driver: bridge
