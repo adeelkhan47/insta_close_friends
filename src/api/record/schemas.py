@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel
 
 
@@ -19,6 +17,19 @@ class RecordResponse(BaseModel):
     followers : int
     fail_count : int
     pass_count : int
+
+class AccountCreds(BaseModel):
+
+    username: str
+    password : str
+    session_id: str
+class AccountVerification(BaseModel):
+    session_id: str
+    value : int
+    code: str
+class AccountDriver(BaseModel):
+    session_id: str
+    username: str
 
 class Signin(BaseModel):
 

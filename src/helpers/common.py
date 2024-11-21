@@ -12,35 +12,6 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-def extract_using_GBC(path):
-    username = "adeelkhan47"
-    password = "Adeelk47!"
-
-    # Initialize the client with your credentials
-    client = deathbycaptcha.SocketClient(username, password)
-    try:
-        # Get your current balance
-        # balance = client.get_balance()
-        # print(f"Current Balance: {balance}")
-
-        # Send the CAPTCHA for solving
-        captcha = client.decode(path, timeout=60)  # Increased timeout for better chance of accurate solution
-        if captcha:
-            # The CAPTCHA was solved
-            print(f"CAPTCHA {captcha['captcha']} solved: {captcha['text']}")
-            return captcha['text']
-        else:
-            print("CAPTCHA was not solved")
-            return "0000"
-
-    except deathbycaptcha.AccessDeniedException as e:
-        print(f"Access denied: {e}")
-        return "0000"
-    except Exception as e:
-        # Handle any other errors that might occur
-        logging.exception(f"An error occurred: {e}")
-        return "0000"
-
 
 def close_and_quit_driver(driver):
     try:
@@ -76,7 +47,7 @@ def extract_text_from_image(image_path):
 
 def get_mac_chrome_driver():
     options = ChromeOptions()
-    #options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     path_to_driver = ChromeDriverManager().install()
