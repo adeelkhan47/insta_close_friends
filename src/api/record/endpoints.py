@@ -8,7 +8,7 @@ from selenium import webdriver
 
 from api.record.schemas import AccountCreds, RecordResponse, AccountVerification, AccountDriver
 from common.enums import EntryStatus
-from helpers.common import get_ubuntu_chrome_driver
+from helpers.common import get_ubuntu_chrome_driver, get_mac_chrome_driver
 from helpers.deps import Auth
 from helpers.insta_process import login_and_verify, login_2fa, login_challenge, scrape_followers, add_to_close_friends
 from model import Account
@@ -46,8 +46,8 @@ def get_all_records(account: Account = Depends(Auth())):
 
 @router.post('/login')
 def login_account(data: AccountCreds):
-    # driver = get_mac_chrome_driver()
-    driver = get_ubuntu_chrome_driver()
+    driver = get_mac_chrome_driver()
+    # driver = get_ubuntu_chrome_driver()
     driver_sessions[data.session_id] = driver
     value = login_and_verify(driver, data.username, data.password)
     return {"status": "success", "value": value}
