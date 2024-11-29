@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from api.account.schemas import TokenResponseSchema, AccountSchema, Signin
 from api.record.schemas import AccountCreds, RecordResponse, AccountVerification,AccountDriver
 from common.enums import EntryStatus
-from helpers.common import get_mac_chrome_driver
+from helpers.common import get_mac_chrome_driver, get_ubuntu_chrome_driver
 from helpers.deps import Auth
 from helpers.insta_process import login_and_verify, login_2fa, login_challenge, scrape_followers, add_to_close_friends
 from helpers.jwt import create_access_token
@@ -54,7 +54,8 @@ driver_sessions: Dict[str, webdriver.Chrome] = {}
 
 @router.post('/login')
 def login_account(data: AccountCreds):
-    driver = get_mac_chrome_driver()
+    # driver = get_mac_chrome_driver()
+    driver = get_ubuntu_chrome_driver()
     driver_sessions[data.session_id] = driver
     value = login_and_verify(driver, data.username, data.password)
     return {"status": "success", "value": value}
