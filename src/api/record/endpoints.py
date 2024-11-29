@@ -1,20 +1,17 @@
 import threading
 import time
+from typing import Dict
 from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi import HTTPException
+from selenium import webdriver
 
-from api.account.schemas import TokenResponseSchema, AccountSchema, Signin
-from api.record.schemas import AccountCreds, RecordResponse, AccountVerification,AccountDriver
+from api.record.schemas import AccountCreds, RecordResponse, AccountVerification, AccountDriver
 from common.enums import EntryStatus
-from helpers.common import get_mac_chrome_driver, get_ubuntu_chrome_driver
+from helpers.common import get_ubuntu_chrome_driver
 from helpers.deps import Auth
 from helpers.insta_process import login_and_verify, login_2fa, login_challenge, scrape_followers, add_to_close_friends
-from helpers.jwt import create_access_token
 from model import Account
-from selenium import webdriver
-from typing import Dict
 
 router = APIRouter()
 driver_sessions: Dict[str, webdriver.Chrome] = {}
@@ -42,10 +39,9 @@ def get_all_records(account: Account = Depends(Auth())):
     return data
 
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from selenium import webdriver
 from typing import Dict
-from pydantic import BaseModel
 
 router = APIRouter()
 driver_sessions: Dict[str, webdriver.Chrome] = {}
