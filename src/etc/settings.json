@@ -2,7 +2,7 @@
   "cors_origins": [
     "*"
   ],
-  "database_uri": "postgresql://postgres:postgres@IGStoryBooster_app:5432/IGStoryBooster_db",
+  "database_uri": "postgresql://postgres:postgres@IGStoryBooster_db:5432/IGStoryBooster_db",
   "CELERY_BROKER_REDIS": "redis://localhost:6379/0",
   "REDIS_HOST": "redis",
   "REDIS_PORT": "6379",
