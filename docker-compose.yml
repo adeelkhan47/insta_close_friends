@@ -33,7 +33,7 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - IGStoryBooster_db
+      - postgres_db
       - redis
     networks:
       - app-tier
