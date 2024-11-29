@@ -39,13 +39,6 @@ def get_all_records(account: Account = Depends(Auth())):
     return data
 
 
-from fastapi import APIRouter, HTTPException
-from selenium import webdriver
-from typing import Dict
-
-router = APIRouter()
-driver_sessions: Dict[str, webdriver.Chrome] = {}
-
 
 
 @router.post('/login')
