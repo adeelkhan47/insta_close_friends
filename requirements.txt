@@ -78,7 +78,7 @@ urllib3==2.0.6
 uvicorn==0.23.2
 uvloop==0.18.0
 vine==5.0.0
-watchfiles==0.21.0
+watchfiles
 wcwidth
 webdriver-manager==4.0.1
 websockets==11.0.3
