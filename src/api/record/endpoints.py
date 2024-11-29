@@ -85,7 +85,10 @@ def process_followers(driver, username):
         print(f"Total followers: {len(followers)}")
         for each in followers:
             time.sleep(1)  # Simulate processing delay
-            add_to_close_friends(driver, each)
+            try:
+                add_to_close_friends(driver, each)
+            except:
+                print(f"skipped = {each}")
         driver.quit()
     except Exception as e:
         driver.quit()

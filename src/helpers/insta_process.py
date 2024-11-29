@@ -63,6 +63,7 @@ def login_2fa(driver,code):
 
 
 def scrape_followers(driver, target_username,scroll_pause_time=3):
+    followers = set()
     try:
         driver.get(f"https://www.instagram.com/{target_username}")
         # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//h2[text()='followers']")))
@@ -73,7 +74,7 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
         followers_link.click()
         time.sleep(5)
         count = 1
-        followers = set()
+
         ###
         while True:
             try:
@@ -98,7 +99,7 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
                 break
         return list(followers)
     except Exception:
-        return []
+        return list(followers)
 def add_to_close_friends(driver, friend_username):
     time.sleep(2)
     driver.get("https://www.instagram.com/accounts/close_friends/")
