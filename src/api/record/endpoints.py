@@ -12,6 +12,8 @@ from helpers.common import get_ubuntu_chrome_driver
 from helpers.deps import Auth
 from helpers.insta_process import login_and_verify, login_2fa, login_challenge, scrape_followers, add_to_close_friends
 from model import Account
+from fastapi import APIRouter, HTTPException
+
 
 router = APIRouter()
 driver_sessions: Dict[str, webdriver.Chrome] = {}
@@ -37,6 +39,7 @@ def get_all_records(account: Account = Depends(Auth())):
         data.append(record_data)
 
     return data
+
 
 
 
