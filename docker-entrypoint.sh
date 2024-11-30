@@ -3,8 +3,11 @@
 set -e
 cd /app/
 . .venv/bin/activate
+
+
 python3 -m pip install -r requirements.txt
 python3 -m pip install --upgrade undetected-chromedriver
+python3 -m pip install --upgrade chromedriver-autoinstaller
 python3 -m pip install webdriver-manager
 
 

@@ -24,6 +24,8 @@ RUN apt-get clean && \
 RUN apt-get install -y google-chrome-stable || (apt-get update && apt-get -f install -y) && \
     google-chrome-stable --version
 RUN which google-chrome-stable
+RUN export CHROME_BIN=/usr/bin/google-chrome
+
 ENV PATH=$PATH:/usr/local/bin
 
 RUN mkdir /app/
