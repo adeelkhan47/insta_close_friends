@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 
 # Install basic dependencies
+# Install basic dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -26,6 +27,10 @@ RUN set -eux; \
     if [ -z "$CHROMEDRIVER_VERSION" ]; then \
         echo "No specific ChromeDriver found for Chrome version $CHROME_VERSION, falling back to the latest version."; \
         CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"); \
+    fi; \
+    if [ -z "$CHROMEDRIVER_VERSION" ]; then \
+        echo "Error: Could not fetch ChromeDriver version."; \
+        exit 1; \
     fi; \
     echo "Fetching ChromeDriver version: $CHROMEDRIVER_VERSION"; \
     wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"; \
