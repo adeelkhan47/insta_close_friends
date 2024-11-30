@@ -24,7 +24,7 @@ RUN set -eux; \
     echo "Detected Chrome major version: $CHROME_VERSION"; \
     CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION" || echo ""); \
     if [ -z "$CHROMEDRIVER_VERSION" ]; then \
-        echo "No specific ChromeDriver found for Chrome version $CHROME_VERSION, using the latest available."; \
+        echo "No specific ChromeDriver found for Chrome version $CHROME_VERSION, falling back to the latest version."; \
         CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"); \
     fi; \
     echo "Fetching ChromeDriver version: $CHROMEDRIVER_VERSION"; \
