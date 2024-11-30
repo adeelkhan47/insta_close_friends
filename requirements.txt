@@ -83,3 +83,4 @@ wcwidth
 webdriver-manager
 websockets==11.0.3
 wsproto==1.2.0
+chromedriver-autoinstaller
