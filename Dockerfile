@@ -11,9 +11,9 @@ RUN mkdir -p /etc/apt/keyrings && \
     rm -rf /var/lib/apt/lists/*
 
 # Install ChromeDriver matching the installed Chrome version
-RUN CHROME_VERSION=$(google-chrome-stable --version | awk '{print $3}') && \
-    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
-    wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" && \
+RUN CHROME_VERSION=$(google-chrome-stable --version | grep -oP '[0-9]+\.[0-9]+\.[0-9]+') && \
+    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%%.*}") && \
+    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" && \
     unzip chromedriver_linux64.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver_linux64.zip
