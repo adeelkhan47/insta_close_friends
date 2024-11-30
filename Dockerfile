@@ -4,7 +4,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 
 # Install basic dependencies
-# Install basic dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -19,12 +18,15 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearm
 # Install Google Chrome
 RUN apt-get update && apt-get install -y google-chrome-stable
 
-# Fetch the latest ChromeDriver compatible with the installed Chrome version
+# Fetch the latest compatible ChromeDriver version
 RUN set -eux; \
     CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1); \
     echo "Detected Chrome major version: $CHROME_VERSION"; \
-    CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION"); \
-    if [ -z "$CHROMEDRIVER_VERSION" ]; then echo "Error: Could not fetch ChromeDriver version for Chrome $CHROME_VERSION"; exit 1; fi; \
+    CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION" || echo ""); \
+    if [ -z "$CHROMEDRIVER_VERSION" ]; then \
+        echo "No specific ChromeDriver found for Chrome version $CHROME_VERSION, using the latest available."; \
+        CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"); \
+    fi; \
     echo "Fetching ChromeDriver version: $CHROMEDRIVER_VERSION"; \
     wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"; \
     unzip chromedriver_linux64.zip -d /usr/local/bin/; \
