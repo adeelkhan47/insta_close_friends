@@ -2,11 +2,8 @@ FROM --platform=linux/amd64 python:3.9
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+
 # Install basic dependencies
-
-# Set non-interactive environment variable for apt
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Install basic dependencies
 RUN apt-get update && apt-get install -y \
     wget \
@@ -22,12 +19,16 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearm
 # Install Google Chrome
 RUN apt-get update && apt-get install -y google-chrome-stable
 
-# Detect Chrome version and install the matching ChromeDriver
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1) && \
-    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
-    wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" && \
-    unzip chromedriver_linux64.zip -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/chromedriver && \
+# Fetch the latest ChromeDriver compatible with the installed Chrome version
+RUN set -eux; \
+    CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1); \
+    echo "Detected Chrome major version: $CHROME_VERSION"; \
+    CHROMEDRIVER_VERSION=$(curl -sSL "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION"); \
+    if [ -z "$CHROMEDRIVER_VERSION" ]; then echo "Error: Could not fetch ChromeDriver version for Chrome $CHROME_VERSION"; exit 1; fi; \
+    echo "Fetching ChromeDriver version: $CHROMEDRIVER_VERSION"; \
+    wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"; \
+    unzip chromedriver_linux64.zip -d /usr/local/bin/; \
+    chmod +x /usr/local/bin/chromedriver; \
     rm chromedriver_linux64.zip
 
 # Verify installations
