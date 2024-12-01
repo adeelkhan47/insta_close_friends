@@ -80,7 +80,7 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
             try:
                 # Locate the follower by dynamic XPath
                 follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
-                    (By.CLASS_NAME,
+                    (By.XPATH,
                      f"/html/body/div[4]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
                 ))
 
