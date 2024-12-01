@@ -76,13 +76,29 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
         count = 1
 
         ###
+        counter = 0
         while True:
             try:
                 # Locate the follower by dynamic XPath
-                follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
-                    (By.XPATH,
-                     f"/html/body/div[4]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
-                ))
+
+                try:
+                    follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
+                        (By.XPATH,f"/html/body/div[{'4' if counter == 0 else counter}]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
+                    ))
+                    counter = 4
+                except:
+                    try:
+                        follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
+                            (By.XPATH,
+                             f"/html/body/div[{'5' if counter == 0 else counter}]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
+                        ))
+                        counter = 5
+                    except:
+                        follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
+                            (By.XPATH,
+                             f"/html/body/div[{'6' if counter == 0 else counter}]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
+                        ))
+                        counter = 6
 
                 print(f"Follower {count}: {follower.text}")
                 followers.add(follower.text)
