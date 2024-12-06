@@ -26,3 +26,13 @@ class AccountRecord(Base):
         :return:
         """
         db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_record_by_account_and_record(cls, account_id,record_id,):
+        with db():
+            row = db.session.query(cls).filter_by(account_id=account_id,record_id=record_id).first()
+            if row:
+                return row.record
+            else:
+                return None

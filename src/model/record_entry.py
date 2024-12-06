@@ -24,4 +24,6 @@ class RecordEntry(Base):
 
         :return:
         """
-        db.session.add(self)
+        with db():
+            db.session.add(self)
+            db.session.commit()

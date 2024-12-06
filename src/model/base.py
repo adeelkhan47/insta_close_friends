@@ -41,9 +41,10 @@ class Base(object):
             Base
         """
         # with db():
-        db.session.add(self)
-        db.session.commit()
-        return self
+        with db():
+            db.session.add(self)
+            db.session.commit()
+            return self
 
     def delete(self) -> Base:
         """
@@ -76,8 +77,9 @@ class Base(object):
             to_update: dictionary to update data
             session: Defaults to None.
         """
-        db.session.query(cls).filter(cls.id == id).update(to_update)
-        db.session.commit()
+        with db():
+            db.session.query(cls).filter(cls.id == id).update(to_update)
+            db.session.commit()
 
     @classmethod
     def get_by_id(cls, id: int) -> Union[Base, None]:
@@ -94,6 +96,24 @@ class Base(object):
 
         row = (
             db.session.query(cls).filter_by(id=id).first()
+        )
+        return row
+
+    @classmethod
+    def get_by_username(cls, username: str) -> Union[Base, None]:
+        """
+        Get by id
+
+        Args:
+            id: fetch row by id
+            session: Defaults to None.
+
+        Returns:
+            Row from database
+        """
+
+        row = (
+            db.session.query(cls).filter_by(username=username).first()
         )
         return row
 

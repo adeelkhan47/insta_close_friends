@@ -62,7 +62,7 @@ def login_2fa(driver,code):
     return True
 
 
-def scrape_followers(driver, target_username,scroll_pause_time=3):
+def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
     followers = set()
     try:
         driver.get(f"https://www.instagram.com/{target_username}")
@@ -74,32 +74,14 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
         followers_link.click()
         time.sleep(5)
         count = 1
-
+        followers = set()
         ###
-        counter = 0
         while True:
             try:
-                # Locate the follower by dynamic XPath
-
-                try:
-                    follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
-                        (By.XPATH,f"/html/body/div[4]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
-                    ))
-                    counter = 4
-                except:
-                    try:
-                        follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
-                            (By.XPATH,
-                             f"/html/body/div[5]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
-                        ))
-                        counter = 5
-                    except:
-                        follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
-                            (By.XPATH,
-                             f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
-                        ))
-                        counter = 6
-
+                follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
+                    (By.XPATH,
+                     f"(//span[@class='_ap3a _aaco _aacw _aacx _aad7 _aade'])[{count}]")
+                ))
                 print(f"Follower {count}: {follower.text}")
                 followers.add(follower.text)
 
@@ -109,31 +91,35 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
                 #                                        f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
                 driver.execute_script("arguments[0].scrollIntoView(true);", follower)
                 count += 1
-
+                if count >= limit:
+                    break
             except Exception as e:
                 logging.exception(e)
                 break
         return list(followers)
     except Exception:
         return list(followers)
-def add_to_close_friends(driver, friend_username):
-    time.sleep(2)
-    driver.get("https://www.instagram.com/accounts/close_friends/")
-    ""
 
-    search_input = WebDriverWait(driver, 5).until(
+def wait_for_at_least_two_elements(driver, xpath):
+    return lambda driver: len(driver.find_elements(By.XPATH, xpath)) >= 2
+def add_to_close_friends(driver, friend_username):
+    time.sleep(1)
+    driver.get("https://www.instagram.com/accounts/close_friends/")
+    search_input = WebDriverWait(driver, 3).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
     )
     search_input.send_keys(friend_username)
     try:
-        records = WebDriverWait(WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "wbloks_1"))), 5).until(
-            EC.presence_of_all_elements_located(
-                (By.XPATH, "//div[contains(@style, 'circle__outline') or contains(@style, 'search__outline')]")
-            )
+        time.sleep(1.5)
+        xpath = "//div[(contains(@data-bloks-name, 'ig.components.Icon') or contains(@style, 'circle__outline')) and not(contains(@style, 'circle-check__filled'))]"
+        elements = WebDriverWait(driver, 3).until(
+            wait_for_at_least_two_elements(driver, xpath)
         )
-        if len(records) > 1:
-            print(f"Add {friend_username} to close friend.")
-            records[1].click()
+        # Retrieve the first two elements
+        record = driver.find_elements(By.XPATH, xpath)[1]
+        record.click()
+        logging.debug(f"Add {friend_username} to close friend.")
+        return True
     except:
-        print("Already close friend.")
+        logging.debug("Already close friend.")
+        return False

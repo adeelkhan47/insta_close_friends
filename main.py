@@ -1,3 +1,4 @@
+import logging
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -56,7 +57,7 @@ def login_and_verify(driver, username, password):
 
     return True
 
-def scrape_followers(driver, target_username,scroll_pause_time=3):
+def scrape_followers(driver, target_username,limit=1000,scroll_pause_time=3):
     try:
         driver.get(f"https://www.instagram.com/{target_username}")
         # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//h2[text()='followers']")))
@@ -71,12 +72,10 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
         ###
         while True:
             try:
-                # Locate the follower by dynamic XPath
-                follower = WebDriverWait(driver, 15).until(EC.presence_of_element_located(
+                follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
                     (By.XPATH,
-                     f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
+                     f"(//span[@class='_ap3a _aaco _aacw _aacx _aad7 _aade'])[{count}]")
                 ))
-
                 print(f"Follower {count}: {follower.text}")
                 followers.add(follower.text)
 
@@ -86,64 +85,35 @@ def scrape_followers(driver, target_username,scroll_pause_time=3):
                 #                                        f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
                 driver.execute_script("arguments[0].scrollIntoView(true);", follower)
                 count += 1
-
+                if count >= limit:
+                    break
             except Exception as e:
-                # print(f"Error at count {count}: {e}")
+                logging.exception(e)
                 break
-
-        ###
-        # count  = 1
-        # followers = set()
-        # while True:
-        #     try:
-        #         follower = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,
-        #                                                                          f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span"))).text
-        #         print(follower)
-        #         followers.add(follower)
-        #         count += 1
-        #     except Exception:
-        #         break
-        # Scroll and load more followers
-        # last_height = driver.execute_script("return arguments[0].scrollHeight", followers_list)
-        # followers = set()  # Use a set to avoid duplicates
-        #
-        # while True:
-        #     # Scroll to the end of the follower list
-        #     driver.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", followers_list)
-        #     time.sleep(1)  # Wait for more followers to load
-        #
-        #     # Extract follower usernames
-        #     followers_elements = driver.find_elements(By.CLASS_NAME, '_ap3a _aaco _aacw _aacx _aad7 _aade')
-        #     for elem in followers_elements:
-        #         followers.add(elem.text())  # Add only the username
-        #
-        #     # Check if more followers loaded
-        #     new_height = driver.execute_script("return arguments[0].scrollHeight", followers_list)
-        #     if new_height == last_height:
-        #         break
-        #     last_height = new_height
         return list(followers)
     except Exception:
         return []
+def wait_for_at_least_two_elements(driver, xpath):
+    return lambda driver: len(driver.find_elements(By.XPATH, xpath)) >= 2
+
 def add_to_close_friends(driver, friend_username):
     time.sleep(2)
     driver.get("https://www.instagram.com/accounts/close_friends/")
     ""
 
-    search_input = WebDriverWait(driver, 5).until(
+    search_input = WebDriverWait(driver, 3).until(
         EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
     )
     search_input.send_keys(friend_username)
     try:
-        records = WebDriverWait(WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "wbloks_1"))), 5).until(
-            EC.presence_of_all_elements_located(
-                (By.XPATH, "//div[contains(@style, 'circle__outline') or contains(@style, 'search__outline')]")
-            )
+        time.sleep(1.5)
+        xpath = "//div[(contains(@data-bloks-name, 'ig.components.Icon') or contains(@style, 'circle__outline')) and not(contains(@style, 'circle-check__filled'))]"
+        elements = WebDriverWait(driver, 3).until(
+            wait_for_at_least_two_elements(driver, xpath)
         )
-        if len(records) > 1:
-            print(f"Add {friend_username} to close friend.")
-            records[1].click()
+        record = driver.find_elements(By.XPATH, xpath)[1]
+        record.click()
+        print(f"Add {friend_username} to close friend.")
     except:
         print("Already close friend.")
     # WebDriverWait(driver, 5).until(
@@ -157,10 +127,10 @@ def add_to_close_friends(driver, friend_username):
 # Replace these with your Instagram credentials
 # username = "michaelangelogerardi"
 # password = "Adeel123!"
-username = "louie_the_lion"
-password = "Adeel1!"
-# username = "adeelkhan_47"
-# password = "Mazink47!"
+# username = "louie_the_lion"
+# password = "Adeel1!"
+username = "adeelkhan_47"
+password = "Mazink47!"
 # username = "bf__lahore1"
 # password = "Ahmad47!"
 
@@ -170,8 +140,9 @@ driver.implicitly_wait(5)
 
 try:
     if login_and_verify(driver, username, password):
-        followers = scrape_followers(driver,username)
+        followers = scrape_followers(driver,username,20)
         print(len(followers))
+
         for each in followers:
             time.sleep(1)
             add_to_close_friends(driver, each)

@@ -18,3 +18,4 @@ class Entry(Base):
     record_entries = relationship("RecordEntry", backref="entry")
 
 
+

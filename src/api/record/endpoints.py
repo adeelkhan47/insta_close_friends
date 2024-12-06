@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 from typing import Dict
@@ -7,11 +8,11 @@ from fastapi import APIRouter, Depends
 from selenium import webdriver
 
 from api.record.schemas import AccountCreds, RecordResponse, AccountVerification, AccountDriver
-from common.enums import EntryStatus
+from common.enums import EntryStatus, RecordStatus
 from helpers.common import get_ubuntu_chrome_driver, get_mac_chrome_driver
 from helpers.deps import Auth
 from helpers.insta_process import login_and_verify, login_2fa, login_challenge, scrape_followers, add_to_close_friends
-from model import Account
+from model import Account, Record, AccountRecord, Entry, RecordEntry
 from fastapi import APIRouter, HTTPException
 
 
@@ -45,15 +46,22 @@ def get_all_records(account: Account = Depends(Auth())):
 
 
 @router.post('/login')
-def login_account(data: AccountCreds):
+def login_account(data: AccountCreds,account: Account = Depends(Auth())):
     # driver = get_mac_chrome_driver()
     driver = get_ubuntu_chrome_driver()
     driver_sessions[data.session_id] = driver
     value = login_and_verify(driver, data.username, data.password)
+
+    record = Record(username=data.username,status=RecordStatus.Pending.value, followers=0)
+    record.insert()
+    account_Record = AccountRecord(account_id=account.id,record_id=record.id)
+    account_Record.insert()
+
+
     return {"status": "success", "value": value}
 
 @router.post('/code')
-def login_account_code(data : AccountVerification):
+def login_account_code(data : AccountVerification,account: Account = Depends(Auth())):
     try:
         driver = driver_sessions.get(data.session_id)
         if not driver:
@@ -69,31 +77,44 @@ def login_account_code(data : AccountVerification):
     return {"status": "verification success"}
 
 
-def process_followers(driver, username):
+def process_followers(driver, username,account_id):
     """
     Function to scrape followers and add them to close friends in a separate thread.
     """
-    try:
-        followers = scrape_followers(driver, username)
-        print(f"Total followers: {len(followers)}")
-        for each in followers:
-            time.sleep(1)  # Simulate processing delay
-            try:
-                add_to_close_friends(driver, each)
-            except:
-                print(f"skipped = {each}")
-        driver.quit()
-    except Exception as e:
-        driver.quit()
-        print(f"Error in processing followers: {e}")
+    record = Record.get_by_username(username)
+    account_record = AccountRecord.get_record_by_account_and_record(account_id=account_id, record_id=record.id)
+    if account_record:
+        try:
+            Record.update(id=record.id,to_update={"status":RecordStatus.FetchingFollowers.value})
+            followers = scrape_followers(driver, username,limit=50)
+            Record.update(id=record.id, to_update={"followers": len(followers)})
+            logging.debug(f"Total followers: {len(followers)}")
+            Record.update(id=record.id, to_update={"status": RecordStatus.AddingFollowers.value})
+            for each in followers:
+                time.sleep(1)  # Simulate processing delay
+                try:
+                    item = add_to_close_friends(driver, each)
+                    if item:
+                        entry = Entry(follower=each,status=EntryStatus.Passed.value)
+                    else:
+                        entry = Entry(follower=each, status=EntryStatus.Failed.value)
+                    record.insert()
+                    record_entry = RecordEntry(record_id=record.id,entry_id=entry.id)
+                    record_entry.insert()
+                except:
+                    logging.debug(f"skipped = {each}")
+            driver.quit()
+        except Exception as e:
+            driver.quit()
+            logging.debug(f"Error in processing followers: {e}")
 @router.post('/start_process')
-def login_account_code(data : AccountDriver):
+def login_account_code(data : AccountDriver,account: Account = Depends(Auth())):
     try:
         driver = driver_sessions.get(data.session_id)
         if not driver:
             raise HTTPException(status_code=404, detail="Session not found.")
         background_thread = threading.Thread(
-            target=process_followers, args=(driver, data.username), daemon=True
+            target=process_followers, args=(driver, data.username,account.id), daemon=True
         )
         background_thread.start()
     except Exception as e:

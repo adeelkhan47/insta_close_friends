@@ -22,6 +22,8 @@ class RecordStatus(Enum):
     Failed = "Failed"
     Partial = "Partial"
     Pending = "Pending"
+    FetchingFollowers = "FetchingFollowers"
+    AddingFollowers = "AddingFollowers"
 class EntryStatus(Enum):
     Passed = "Passed"
     Failed = "Failed"

@@ -17,5 +17,10 @@ class Record(Base):
     account = relationship("AccountRecord", backref="record")
     record_entries = relationship("RecordEntry", backref="record")
 
+    @classmethod
+    def get_by_username(cls, username: str):
+        with db():
+            row = db.session.query(cls).filter_by(username=username).first()
+            return row
 
 
