@@ -95,10 +95,11 @@ def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
                     break
             except Exception as e:
                 logging.exception(e)
+                logging.info(e)
                 break
         return list(followers)
     except Exception as e:
-        logging.exception(e)
+        logging.info(e)
         return list(followers)
 
 def wait_for_at_least_two_elements(driver, xpath):
