@@ -50,6 +50,6 @@ def signin(creds : Signin):
 @router.get('/test')
 def test(account: Account = Depends(Auth())):
     logging.info("in Info")
-    logging.debug("in Info")
-    logging.error("in Info")
-    logging.exception("in Info")
+    logging.debug("in debug")
+    logging.error("in error")
+    logging.exception("in excep")
