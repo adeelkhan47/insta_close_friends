@@ -103,9 +103,12 @@ def process_followers(driver, username,account_id):
                     record_entry.insert()
                 except:
                     logging.debug(f"skipped = {each}")
+            Record.update(id=record.id, to_update={"status": RecordStatus.Success.value})
             driver.quit()
         except Exception as e:
+            Record.update(id=record.id, to_update={"status": RecordStatus.Failed.value})
             driver.quit()
+
             logging.debug(f"Error in processing followers: {e}")
 @router.post('/start_process')
 def login_account_code(data : AccountDriver,account: Account = Depends(Auth())):
