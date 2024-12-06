@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends
 from fastapi import HTTPException
 
@@ -47,5 +49,7 @@ def signin(creds : Signin):
 
 @router.get('/test')
 def test(account: Account = Depends(Auth())):
-    print(account.email)
-    return "ok"
+    logging.info("in Info")
+    logging.debug("in Info")
+    logging.error("in Info")
+    logging.exception("in Info")
