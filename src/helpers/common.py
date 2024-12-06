@@ -4,7 +4,6 @@ import re
 
 import pytesseract
 from PIL import Image
-from deathbycaptcha import deathbycaptcha
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.options import Options as ChromeOptions
