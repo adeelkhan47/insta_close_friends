@@ -31,7 +31,7 @@ def get_all_records(account: Account = Depends(Auth())):
         # Failed = 0
 
         pass_count = len([x for x in each.record.record_entries if x.entry.status == EntryStatus.Passed.value])
-        fail_count = each.record.followers - pass_count
+        fail_count = len([x for x in each.record.record_entries if x.entry.status == EntryStatus.Failed.value])
         record_data = {"username": each.record.username,
          "status":each.record.status,
          "followers":each.record.followers,
