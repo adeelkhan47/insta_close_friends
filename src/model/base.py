@@ -97,23 +97,6 @@ class Base(object):
             db.session.query(cls).filter_by(id=id).first()
         )
         return row
-    @classmethod
-    def get_by_id_with_db(cls, id: int) -> Union[Base, None]:
-        """
-        Get by id
-
-        Args:
-            id: fetch row by id
-            session: Defaults to None.
-
-        Returns:
-            Row from database
-        """
-        with db():
-            row = (
-                db.session.query(cls).filter_by(id=id).first()
-            )
-            return row
 
     @classmethod
     def get_by_username(cls, username: str) -> Union[Base, None]:

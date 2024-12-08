@@ -31,3 +31,9 @@ class Account(Base):
         row = db.session.query(cls).filter_by(email=email).first()
         return row
 
+    @classmethod
+    def get_by_id_with_db(cls, id: str):
+        with db():
+            row = db.session.query(cls).filter_by(id=id).first()
+            return row
+
