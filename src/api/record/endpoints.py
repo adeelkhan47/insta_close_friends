@@ -4,8 +4,12 @@ import time
 from typing import Dict
 from typing import List
 
+from selenium.webdriver.support import expected_conditions as EC
+
 from fastapi import APIRouter, Depends
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 from api.record.schemas import AccountCreds, RecordResponse, AccountVerification, AccountDriver
 from common.enums import EntryStatus, RecordStatus
@@ -108,12 +112,17 @@ def process_followers(driver, username,account_id):
             logging.debug(f"Total followers: {len(followers)}")
             Record.update(id=record.id, to_update={"status": RecordStatus.AddingFollowers.value})
             driver.get("https://www.instagram.com/accounts/close_friends/")
-            for each in followers:
-                time.sleep(1)  # Simulate processing delay
+            for each in followers:  # Simulate processing delay
                 try:
 
                     if each not in previous_entries:
+                        search_input = WebDriverWait(driver, 3).until(
+                            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
+                        )
+                        search_input.send_keys(each)
                         item = add_to_close_friends(driver, each)
+                        search_input.clear()
+
                         if item:
                             entry = Entry(follower=each,status=EntryStatus.Passed.value)
                         else:

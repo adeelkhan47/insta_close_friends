@@ -107,10 +107,6 @@ def wait_for_at_least_two_elements(driver, xpath):
 def add_to_close_friends(driver, friend_username):
     try:
 
-        search_input = WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
-        )
-        search_input.send_keys(friend_username)
         time.sleep(1)
         xpath = "//div[(contains(@data-bloks-name, 'ig.components.Icon') or contains(@style, 'circle__outline')) and not(contains(@style, 'circle-check__filled'))]"
         elements = WebDriverWait(driver, 3).until(
