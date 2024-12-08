@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, Boolean
 from sqlalchemy import String, Boolean, Integer, JSON
 from sqlalchemy.sql.schema import Column, ForeignKey
 from .base import Base
-from sqlalchemy.orm import relationship, joinedload
+from sqlalchemy.orm import relationship
 
 
 class Account(Base):
@@ -33,7 +33,6 @@ class Account(Base):
 
     @classmethod
     def get_by_id_with_db(cls, id: int):
-        with db() as session:
-            row = session.query(cls).options(joinedload(cls.records)).filter_by(id=id).first()
-            return row
+        row = db.session.query(cls).filter_by(id=id).first()
+        return row
 
