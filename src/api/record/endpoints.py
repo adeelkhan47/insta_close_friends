@@ -50,12 +50,22 @@ def login_account(data: AccountCreds,account: Account = Depends(Auth())):
     # driver = get_mac_chrome_driver()
     driver = get_ubuntu_chrome_driver()
     driver_sessions[data.session_id] = driver
+
+    my_rec = [each.record for each in account.records]
+    record = None
+    for each in my_rec:
+        if each.username == data.username:
+            record = each
+            break
+    if not record:
+        record = Record(username=data.username, status=RecordStatus.Pending.value, followers=0)
+        record.insert()
+        account_Record = AccountRecord(account_id=account.id, record_id=record.id)
+        account_Record.insert()
+
     value = login_and_verify(driver, data.username, data.password)
 
-    record = Record(username=data.username,status=RecordStatus.Pending.value, followers=0)
-    record.insert()
-    account_Record = AccountRecord(account_id=account.id,record_id=record.id)
-    account_Record.insert()
+
 
 
     return {"status": "success", "value": value}
@@ -81,8 +91,15 @@ def process_followers(driver, username,account_id):
     """
     Function to scrape followers and add them to close friends in a separate thread.
     """
-    record = Record.get_by_username(username)
+    account = Account.get_by_id(account_id)
+    my_rec = [each.record for each in account.records]
+    record = None
+    for each in my_rec:
+        if each.username == username:
+            record = each
     account_record = AccountRecord.get_record_by_account_and_record(account_id=account_id, record_id=record.id)
+    previous_entries = [record_entries.entry.follower for record_entries in record.record_entries if record_entries.entry.status == EntryStatus.Passed.value]
+
     if account_record:
         try:
             Record.update(id=record.id,to_update={"status":RecordStatus.FetchingFollowers.value})
@@ -93,14 +110,16 @@ def process_followers(driver, username,account_id):
             for each in followers:
                 time.sleep(1)  # Simulate processing delay
                 try:
-                    item = add_to_close_friends(driver, each)
-                    if item:
-                        entry = Entry(follower=each,status=EntryStatus.Passed.value)
-                    else:
-                        entry = Entry(follower=each, status=EntryStatus.Failed.value)
-                    entry.insert()
-                    record_entry = RecordEntry(record_id=record.id,entry_id=entry.id)
-                    record_entry.insert()
+
+                    if each not in previous_entries:
+                        item = add_to_close_friends(driver, each)
+                        if item:
+                            entry = Entry(follower=each,status=EntryStatus.Passed.value)
+                        else:
+                            entry = Entry(follower=each, status=EntryStatus.Failed.value)
+                        entry.insert()
+                        record_entry = RecordEntry(record_id=record.id,entry_id=entry.id)
+                        record_entry.insert()
                 except:
                     logging.debug(f"skipped = {each}")
             Record.update(id=record.id, to_update={"status": RecordStatus.Success.value})

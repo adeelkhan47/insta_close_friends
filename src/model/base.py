@@ -93,11 +93,11 @@ class Base(object):
         Returns:
             Row from database
         """
-
-        row = (
-            db.session.query(cls).filter_by(id=id).first()
-        )
-        return row
+        with db():
+            row = (
+                db.session.query(cls).filter_by(id=id).first()
+            )
+            return row
 
     @classmethod
     def get_by_username(cls, username: str) -> Union[Base, None]:
