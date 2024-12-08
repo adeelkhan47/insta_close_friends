@@ -25,7 +25,7 @@ driver_sessions: Dict[str, webdriver.Chrome] = {}
 @router.get('',response_model=List[RecordResponse])
 def get_all_records(account: Account = Depends(Auth())):
     data = []
-
+    account = Account.get_by_id(account.id)
     for each in account.records:
         # Passed = 0
         # Failed = 0
