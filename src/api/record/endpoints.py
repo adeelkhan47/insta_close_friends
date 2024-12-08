@@ -98,7 +98,7 @@ def process_followers(driver, username,account_id):
                         entry = Entry(follower=each,status=EntryStatus.Passed.value)
                     else:
                         entry = Entry(follower=each, status=EntryStatus.Failed.value)
-                    record.insert()
+                    entry.insert()
                     record_entry = RecordEntry(record_id=record.id,entry_id=entry.id)
                     record_entry.insert()
                 except:
