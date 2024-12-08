@@ -91,7 +91,7 @@ def process_followers(driver, username,account_id):
     """
     Function to scrape followers and add them to close friends in a separate thread.
     """
-    account = Account.get_by_id(account_id)
+    account = Account.get_by_id_with_db(account_id)
     my_rec = [each.record for each in account.records]
     record = None
     for each in my_rec:

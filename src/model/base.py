@@ -82,7 +82,23 @@ class Base(object):
             db.session.commit()
 
     @classmethod
-    def get_by_id(cls, id: int) -> Union[Base, None]:
+    def get_by_idb(cls, id: int) -> Union[Base, None]:
+        """
+        Get by id
+
+        Args:
+            id: fetch row by id
+            session: Defaults to None.
+
+        Returns:
+            Row from database
+        """
+        row = (
+            db.session.query(cls).filter_by(id=id).first()
+        )
+        return row
+    @classmethod
+    def get_by_id_with_db(cls, id: int) -> Union[Base, None]:
         """
         Get by id
 
