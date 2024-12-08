@@ -21,4 +21,4 @@ do
 done
 #exec celery -A tasks.email worker -l INFO --pool=solo &
 #exec celery -A tasks.email beat -l INFO &
-exec gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --timeout 10000 --forwarded-allow-ips='*' wsgi:app
+exec gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --timeout 36000 --forwarded-allow-ips='*' wsgi:app

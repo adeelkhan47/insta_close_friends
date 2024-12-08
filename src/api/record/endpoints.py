@@ -114,12 +114,16 @@ def process_followers(driver, username,account_id):
 def login_account_code(data : AccountDriver,account: Account = Depends(Auth())):
     try:
         driver = driver_sessions.get(data.session_id)
+
         if not driver:
             raise HTTPException(status_code=404, detail="Session not found.")
-        background_thread = threading.Thread(
-            target=process_followers, args=(driver, data.username,account.id), daemon=True
-        )
-        background_thread.start()
+
+        # background_thread = threading.Thread(
+        #     target=process_followers, args=(driver, data.username,account.id), daemon=True
+        # )
+        # background_thread.start()
+        process_followers(data.username,account_id=account.id)
+        return {"status": "verification success"}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Verification failed: {str(e)}")
-    return {"status": "verification success"}
