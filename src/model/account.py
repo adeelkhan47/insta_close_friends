@@ -32,7 +32,7 @@ class Account(Base):
         return row
 
     @classmethod
-    def get_by_id_with_db(cls, id: str):
+    def get_by_id_with_db(cls, id: int):
         with db():
             row = db.session.query(cls).filter_by(id=id).first()
             return row
