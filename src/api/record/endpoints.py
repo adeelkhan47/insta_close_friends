@@ -122,7 +122,7 @@ def login_account_code(data : AccountDriver,account: Account = Depends(Auth())):
         #     target=process_followers, args=(driver, data.username,account.id), daemon=True
         # )
         # background_thread.start()
-        process_followers(data.username,account_id=account.id)
+        process_followers(driver,data.username,account_id=account.id)
         return {"status": "verification success"}
 
     except Exception as e:
