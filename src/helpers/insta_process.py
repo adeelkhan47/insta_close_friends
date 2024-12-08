@@ -105,13 +105,13 @@ def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
 def wait_for_at_least_two_elements(driver, xpath):
     return lambda driver: len(driver.find_elements(By.XPATH, xpath)) >= 2
 def add_to_close_friends(driver, friend_username):
-    time.sleep(1)
-    driver.get("https://www.instagram.com/accounts/close_friends/")
-    search_input = WebDriverWait(driver, 3).until(
-        EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
-    )
-    search_input.send_keys(friend_username)
     try:
+        time.sleep(1)
+        driver.get("https://www.instagram.com/accounts/close_friends/")
+        search_input = WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
+        )
+        search_input.send_keys(friend_username)
         time.sleep(2)
         xpath = "//div[(contains(@data-bloks-name, 'ig.components.Icon') or contains(@style, 'circle__outline')) and not(contains(@style, 'circle-check__filled'))]"
         elements = WebDriverWait(driver, 3).until(
@@ -123,7 +123,6 @@ def add_to_close_friends(driver, friend_username):
         logging.debug(f"Add {friend_username} to close friend.")
         return True
     except Exception as e:
-        logging.error("Already close friend.")
+        logging.error("Failed.")
         logging.exception(e)
-
         return False
