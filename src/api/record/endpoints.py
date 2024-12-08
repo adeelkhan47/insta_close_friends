@@ -107,6 +107,7 @@ def process_followers(driver, username,account_id):
             Record.update(id=record.id, to_update={"followers": len(followers)})
             logging.debug(f"Total followers: {len(followers)}")
             Record.update(id=record.id, to_update={"status": RecordStatus.AddingFollowers.value})
+            driver.get("https://www.instagram.com/accounts/close_friends/")
             for each in followers:
                 time.sleep(1)  # Simulate processing delay
                 try:

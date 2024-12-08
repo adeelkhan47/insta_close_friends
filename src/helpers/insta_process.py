@@ -91,7 +91,7 @@ def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
                 #                                        f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
                 driver.execute_script("arguments[0].scrollIntoView(true);", follower)
                 count += 1
-                if count >= limit:
+                if count >= limit+1:
                     break
             except Exception as e:
                 logging.exception(e)
@@ -106,8 +106,7 @@ def wait_for_at_least_two_elements(driver, xpath):
     return lambda driver: len(driver.find_elements(By.XPATH, xpath)) >= 2
 def add_to_close_friends(driver, friend_username):
     try:
-        time.sleep(1)
-        driver.get("https://www.instagram.com/accounts/close_friends/")
+
         search_input = WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
         )

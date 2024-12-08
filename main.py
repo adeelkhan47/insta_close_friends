@@ -97,8 +97,7 @@ def wait_for_at_least_two_elements(driver, xpath):
     return lambda driver: len(driver.find_elements(By.XPATH, xpath)) >= 2
 
 def add_to_close_friends(driver, friend_username):
-    time.sleep(2)
-    driver.get("https://www.instagram.com/accounts/close_friends/")
+
     ""
 
     search_input = WebDriverWait(driver, 3).until(
@@ -140,9 +139,9 @@ driver.implicitly_wait(5)
 
 try:
     if login_and_verify(driver, username, password):
-        followers = scrape_followers(driver,username,20)
+        followers = scrape_followers(driver,username,5)
+        driver.get("https://www.instagram.com/accounts/close_friends/")
         print(len(followers))
-
         for each in followers:
             time.sleep(1)
             add_to_close_friends(driver, each)
