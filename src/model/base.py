@@ -82,7 +82,7 @@ class Base(object):
             db.session.commit()
 
     @classmethod
-    def get_by_idb(cls, id: int) -> Union[Base, None]:
+    def get_by_id(cls, id: int) -> Union[Base, None]:
         """
         Get by id
 
