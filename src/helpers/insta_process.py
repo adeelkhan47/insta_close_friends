@@ -112,7 +112,7 @@ def add_to_close_friends(driver, friend_username):
     )
     search_input.send_keys(friend_username)
     try:
-        time.sleep(1.5)
+        time.sleep(2)
         xpath = "//div[(contains(@data-bloks-name, 'ig.components.Icon') or contains(@style, 'circle__outline')) and not(contains(@style, 'circle-check__filled'))]"
         elements = WebDriverWait(driver, 3).until(
             wait_for_at_least_two_elements(driver, xpath)
@@ -122,6 +122,8 @@ def add_to_close_friends(driver, friend_username):
         record.click()
         logging.debug(f"Add {friend_username} to close friend.")
         return True
-    except:
-        logging.debug("Already close friend.")
+    except Exception as e:
+        logging.error("Already close friend.")
+        logging.exception(e)
+
         return False
