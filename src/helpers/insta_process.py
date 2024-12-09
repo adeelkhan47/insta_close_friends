@@ -6,6 +6,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from model import Record
+
 
 def login_and_verify(driver, username, password):
     # Go to Instagram login page
@@ -62,7 +64,7 @@ def login_2fa(driver,code):
     return True
 
 
-def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
+def scrape_followers(driver, target_username,record_id,limit=10000,scroll_pause_time=3):
     followers = set()
     try:
         driver.get(f"https://www.instagram.com/{target_username}")
@@ -90,6 +92,7 @@ def scrape_followers(driver, target_username,limit=10000,scroll_pause_time=3):
                 # follower_element = driver.find_element(By.XPATH,
                 #                                        f"/html/body/div[6]/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/div[1]/div/div[{count}]/div/div/div/div[2]/div/div/div/div/div/a/div/div/span")
                 driver.execute_script("arguments[0].scrollIntoView(true);", follower)
+                Record.update(id=record_id, to_update={"followers": count})
                 count += 1
                 if count >= limit+1:
                     break

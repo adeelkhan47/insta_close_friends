@@ -107,7 +107,7 @@ def process_followers(driver, username,account_id):
     if account_record:
         try:
             Record.update(id=record.id,to_update={"status":RecordStatus.FetchingFollowers.value})
-            followers = scrape_followers(driver, username,limit=1000)
+            followers = scrape_followers(driver, username,record.id,limit=70000)
             Record.update(id=record.id, to_update={"followers": len(followers)})
             logging.debug(f"Total followers: {len(followers)}")
             Record.update(id=record.id, to_update={"status": RecordStatus.AddingFollowers.value})
