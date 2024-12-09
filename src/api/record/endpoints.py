@@ -122,11 +122,16 @@ def process_followers(driver, username,account_id):
                         search_input.send_keys(each)
                         item = add_to_close_friends(driver, each)
                         search_input.clear()
-
                         if item:
                             entry = Entry(follower=each,status=EntryStatus.Passed.value)
                         else:
-                            entry = Entry(follower=each, status=EntryStatus.Failed.value)
+                            search_input.send_keys(each)
+                            item = add_to_close_friends(driver, each)
+                            search_input.clear()
+                            if item:
+                                entry = Entry(follower=each, status=EntryStatus.Passed.value)
+                            else:
+                                entry = Entry(follower=each, status=EntryStatus.Failed.value)
                         entry.insert()
                         record_entry = RecordEntry(record_id=record.id,entry_id=entry.id)
                         record_entry.insert()
