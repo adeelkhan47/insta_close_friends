@@ -107,7 +107,7 @@ def process_followers(driver, username,account_id):
     if account_record:
         try:
             Record.update(id=record.id,to_update={"status":RecordStatus.FetchingFollowers.value})
-            followers = scrape_followers(driver, username,record.id,limit=70000)
+            followers = scrape_followers(driver, username,record.id,limit=50000)
             Record.update(id=record.id, to_update={"followers": len(followers)})
             logging.debug(f"Total followers: {len(followers)}")
             Record.update(id=record.id, to_update={"status": RecordStatus.AddingFollowers.value})
@@ -125,6 +125,10 @@ def process_followers(driver, username,account_id):
                         if item:
                             entry = Entry(follower=each,status=EntryStatus.Passed.value)
                         else:
+                            driver.get("https://www.instagram.com/accounts/close_friends/")
+                            search_input = WebDriverWait(driver, 3).until(
+                                EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Search']"))
+                            )
                             search_input.send_keys(each)
                             item = add_to_close_friends(driver, each)
                             search_input.clear()
