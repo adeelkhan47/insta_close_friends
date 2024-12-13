@@ -42,7 +42,7 @@ def login_and_verify(driver, username, password):
         return 2
 
     except Exception as e:
-        print("No checkpoint verification needed.")
+        logging.exception("No checkpoint verification needed.")
 
     return 0
 
@@ -74,17 +74,25 @@ def scrape_followers(driver, target_username,record_id,limit=10000,scroll_pause_
         # Open the followers dialog
         followers_link = driver.find_element(By.XPATH, "//a[contains(@href, '/followers')]")
         followers_link.click()
-        time.sleep(5)
+        time.sleep(3)
         count = 1
         followers = set()
         ###
         while True:
             try:
-                follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
-                    (By.XPATH,
-                     f"(//span[@class='_ap3a _aaco _aacw _aacx _aad7 _aade'])[{count}]")
-                ))
-                print(f"Follower {count}: {follower.text}")
+                try:
+                    follower = WebDriverWait(driver, 3).until(EC.presence_of_element_located(
+                        (By.XPATH,
+                         f"(//span[@class='_ap3a _aaco _aacw _aacx _aad7 _aade'])[{count}]")
+                    ))
+
+                    print(f"Follower {count}: {follower.text}")
+                except:
+                    follower = WebDriverWait(driver, 20).until(EC.presence_of_element_located(
+                        (By.XPATH,
+                         f"(//span[@class='_ap3a _aaco _aacw _aacx _aad7 _aade'])[{count}]")
+                    ))
+                    print(f"Follower {count}: {follower.text}")
                 followers.add(follower.text)
 
                 time.sleep(0.5)
